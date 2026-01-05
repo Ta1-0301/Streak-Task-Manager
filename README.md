@@ -29,7 +29,7 @@ Duolingoのストリーク（連続達成）機能にインスパイアされた
 
 ```bash
 # リポジトリをクローン
-git clone <repository-url>
+git clone https://github.com/Ta1-0301/Streak-Task-Manager.git
 cd streak-task-manager
 
 # 依存関係のインストール
@@ -48,4 +48,4 @@ npm run build
 
 ## 👨‍💻 Author
 
-Created by [Your Name] as a portfolio project.
+Created with Antigravity editor.
