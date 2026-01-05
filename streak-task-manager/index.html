@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="連続継続型タスク管理アプリ - Duolingo風のストリーク機能で毎日のタスク継続をサポート">
+    <title>🔥 Streak Task Manager - 連続継続型タスク管理</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="app">
+        <!-- ヘッダー -->
+        <header class="header">
+            <div class="header-brand">
+                <span class="brand-icon">🔥</span>
+                <h1>Streak Task Manager</h1>
+            </div>
+            <nav class="header-nav">
+                <button class="nav-btn active" data-tab="dashboard">
+                    <span class="material-icons">dashboard</span>
+                    <span>ダッシュボード</span>
+                </button>
+                <button class="nav-btn" data-tab="tasks">
+                    <span class="material-icons">task_alt</span>
+                    <span>タスク</span>
+                </button>
+                <button class="nav-btn" data-tab="stats">
+                    <span class="material-icons">analytics</span>
+                    <span>統計</span>
+                </button>
+                <button class="nav-btn" data-tab="memo">
+                    <span class="material-icons">note</span>
+                    <span>メモ</span>
+                </button>
+            </nav>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <!-- ダッシュボード -->
+            <section id="dashboard" class="tab-content active">
+                <div class="dashboard-grid">
+                    <!-- ストリークカード -->
+                    <div class="card streak-card">
+                        <div class="streak-display">
+                            <div class="streak-fire">
+                                <span class="fire-icon">🔥</span>
+                                <span id="streak-count" class="streak-number">0</span>
+                            </div>
+                            <p class="streak-label">日連続継続中！</p>
+                        </div>
+                        <div class="streak-badges" id="streak-badges">
+                            <!-- バッジがここに表示される -->
+                        </div>
+                        <div class="streak-message" id="streak-message">
+                            今日のタスクを完了して継続を維持しよう！
+                        </div>
+                    </div>
+
+                    <!-- カレンダーカード -->
+                    <div class="card calendar-card">
+                        <div class="card-header">
+                            <h2>達成カレンダー</h2>
+                            <div class="calendar-nav">
+                                <button id="prev-month" class="icon-btn">
+                                    <span class="material-icons">chevron_left</span>
+                                </button>
+                                <span id="current-month">2026年1月</span>
+                                <button id="next-month" class="icon-btn">
+                                    <span class="material-icons">chevron_right</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="calendar-grid" id="calendar-grid">
+                            <!-- カレンダーがここに表示される -->
+                        </div>
+                    </div>
+
+                    <!-- 今日のタスクカード -->
+                    <div class="card today-tasks-card">
+                        <div class="card-header">
+                            <h2>今日のタスク</h2>
+                            <button id="quick-add-btn" class="btn btn-primary btn-sm">
+                                <span class="material-icons">add</span>
+                                追加
+                            </button>
+                        </div>
+                        <div class="today-tasks-list" id="today-tasks-list">
+                            <!-- 今日のタスクがここに表示される -->
+                        </div>
+                        <div class="today-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="today-progress-fill"></div>
+                            </div>
+                            <span id="today-progress-text">0/0 完了</span>
+                        </div>
+                    </div>
+
+                    <!-- タイマーカード -->
+                    <div class="card timer-card">
+                        <div class="card-header">
+                            <h2>作業タイマー</h2>
+                        </div>
+                        <div class="timer-display">
+                            <span id="timer-hours">00</span>:<span id="timer-minutes">00</span>:<span
+                                id="timer-seconds">00</span>
+                        </div>
+                        <select id="timer-task-select" class="timer-task-select">
+                            <option value="">タスクを選択...</option>
+                        </select>
+                        <div class="timer-controls">
+                            <button id="timer-start" class="btn btn-success">
+                                <span class="material-icons">play_arrow</span>
+                            </button>
+                            <button id="timer-pause" class="btn btn-warning" disabled>
+                                <span class="material-icons">pause</span>
+                            </button>
+                            <button id="timer-stop" class="btn btn-danger" disabled>
+                                <span class="material-icons">stop</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- タスク管理 -->
+            <section id="tasks" class="tab-content">
+                <div class="tasks-container">
+                    <div class="card task-form-card">
+                        <h2>新しいタスク</h2>
+                        <form id="task-form" class="task-form">
+                            <div class="form-group">
+                                <label for="task-name">タスク名 *</label>
+                                <input type="text" id="task-name" required placeholder="タスク名を入力">
+                            </div>
+                            <div class="form-group">
+                                <label for="task-description">詳細説明</label>
+                                <textarea id="task-description" placeholder="タスクの詳細を入力（任意）"></textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="task-deadline">期限</label>
+                                    <input type="date" id="task-deadline">
+                                </div>
+                                <div class="form-group">
+                                    <label for="task-priority">優先度</label>
+                                    <select id="task-priority">
+                                        <option value="low">低</option>
+                                        <option value="medium" selected>中</option>
+                                        <option value="high">高</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <span class="material-icons">add</span>
+                                タスクを追加
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="card task-list-card">
+                        <div class="card-header">
+                            <h2>タスク一覧</h2>
+                            <div class="task-filters">
+                                <button class="filter-btn active" data-filter="all">すべて</button>
+                                <button class="filter-btn" data-filter="active">未完了</button>
+                                <button class="filter-btn" data-filter="completed">完了</button>
+                            </div>
+                        </div>
+                        <div class="task-search">
+                            <span class="material-icons">search</span>
+                            <input type="text" id="task-search" placeholder="タスクを検索...">
+                        </div>
+                        <div class="task-list" id="task-list">
+                            <!-- タスクリストがここに表示される -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 統計 -->
+            <section id="stats" class="tab-content">
+                <div class="stats-container">
+                    <div class="card stats-overview-card">
+                        <h2>概要</h2>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-value" id="stat-total-tasks">0</span>
+                                <span class="stat-label">総タスク数</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="stat-completed-tasks">0</span>
+                                <span class="stat-label">完了タスク</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="stat-total-time">0h</span>
+                                <span class="stat-label">総作業時間</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="stat-best-streak">0</span>
+                                <span class="stat-label">最高継続日数</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            <h2>日別作業時間</h2>
+                            <select id="bar-chart-period" class="chart-period-select">
+                                <option value="7">過去7日</option>
+                                <option value="14">過去14日</option>
+                                <option value="30">過去30日</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="bar-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            <h2>タスク別作業時間</h2>
+                        </div>
+                        <div class="chart-container chart-container-pie">
+                            <canvas id="pie-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            <h2>継続日数の推移</h2>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="line-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- メモ -->
+            <section id="memo" class="tab-content">
+                <div class="memo-container">
+                    <div class="card memo-form-card">
+                        <h2>新しいメモ</h2>
+                        <form id="memo-form" class="memo-form">
+                            <div class="form-group">
+                                <label for="memo-title">タイトル</label>
+                                <input type="text" id="memo-title" placeholder="メモのタイトル">
+                            </div>
+                            <div class="form-group">
+                                <label for="memo-content">内容</label>
+                                <textarea id="memo-content" rows="5" placeholder="メモの内容を入力..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="memo-task-link">タスクに紐づけ</label>
+                                <select id="memo-task-link">
+                                    <option value="">紐づけなし</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <span class="material-icons">save</span>
+                                メモを保存
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="card reflection-card">
+                        <h2>今日の振り返り</h2>
+                        <form id="reflection-form" class="reflection-form">
+                            <div class="form-group">
+                                <label for="reflection-good">
+                                    <span class="material-icons">thumb_up</span>
+                                    今日の良かった点
+                                </label>
+                                <textarea id="reflection-good" rows="3" placeholder="今日良かったことは..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="reflection-goal">
+                                    <span class="material-icons">flag</span>
+                                    明日の目標
+                                </label>
+                                <textarea id="reflection-goal" rows="3" placeholder="明日達成したいことは..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-secondary btn-block">
+                                <span class="material-icons">check</span>
+                                振り返りを保存
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="card memo-list-card">
+                        <div class="card-header">
+                            <h2>メモ一覧</h2>
+                        </div>
+                        <div class="memo-search">
+                            <span class="material-icons">search</span>
+                            <input type="text" id="memo-search" placeholder="メモを検索...">
+                        </div>
+                        <div class="memo-list" id="memo-list">
+                            <!-- メモリストがここに表示される -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- モーダル：タスク編集 -->
+    <div class="modal" id="edit-task-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>タスクを編集</h3>
+                <button class="modal-close" id="edit-modal-close">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <form id="edit-task-form">
+                <input type="hidden" id="edit-task-id">
+                <div class="form-group">
+                    <label for="edit-task-name">タスク名 *</label>
+                    <input type="text" id="edit-task-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-task-description">詳細説明</label>
+                    <textarea id="edit-task-description"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-task-deadline">期限</label>
+                        <input type="date" id="edit-task-deadline">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-task-priority">優先度</label>
+                        <select id="edit-task-priority">
+                            <option value="low">低</option>
+                            <option value="medium">中</option>
+                            <option value="high">高</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="edit-task-time">作業時間（分）</label>
+                    <input type="number" id="edit-task-time" min="0" step="1">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="edit-modal-cancel">キャンセル</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- モーダル：クイック追加 -->
+    <div class="modal" id="quick-add-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-sm">
+            <div class="modal-header">
+                <h3>タスクを追加</h3>
+                <button class="modal-close" id="quick-add-close">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <form id="quick-add-form">
+                <div class="form-group">
+                    <input type="text" id="quick-task-name" required placeholder="タスク名を入力">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <select id="quick-task-priority">
+                            <option value="low">低</option>
+                            <option value="medium" selected>中</option>
+                            <option value="high">高</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">追加</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- トースト通知 -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
