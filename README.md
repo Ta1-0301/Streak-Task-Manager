@@ -3,7 +3,6 @@
 Duolingoのストリーク（連続達成）機能にインスパイアされた、モチベーション維持特化型のタスク管理アプリです。
 モダンなダークテーマと直感的なUIで、日々のタスク消化をゲーム感覚で楽しめます。
 
-![App Icon](icon.ico)
 
 ## ✨ 特徴
 
@@ -45,7 +44,3 @@ npm start
 # プロダクションビルドの実行（distフォルダにexeが生成されます）
 npm run build
 ```
-
-## 👨‍💻 Author
-
-Created with Antigravity editor.
